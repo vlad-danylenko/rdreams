@@ -25,7 +25,6 @@ public class ServiceBean implements ApplicationContextAware {
     public void init() {
         log.info("Get all students");
         studentService.getStudents();
-        System.out.println("test");
     }
 
 
