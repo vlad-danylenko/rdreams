@@ -1,4 +1,4 @@
-package com.spring.rdreams.core.service;
+package com.spring.rdreams.service;
 
 import com.spring.rdreams.core.di.Student;
 

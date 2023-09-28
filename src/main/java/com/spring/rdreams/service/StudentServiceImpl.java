@@ -1,4 +1,4 @@
-package com.spring.rdreams.core.service;
+package com.spring.rdreams.service;
 
 import com.spring.rdreams.core.di.Student;
 import jakarta.annotation.PostConstruct;
@@ -6,10 +6,12 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+
 @Service
 public class StudentServiceImpl implements StudentService {
 
-List<Student> students = new ArrayList<>();
+    private List<Student> students = new ArrayList<>();
+
     @PostConstruct
     public void init() {
         Student vlad = Student.builder()
@@ -35,7 +37,7 @@ List<Student> students = new ArrayList<>();
 
     @Override
     public void getStudents() {
-        for (int i=0;i<students.size();i++) {
+        for (int i = 0; i < students.size(); i++) {
             System.out.println(students.get(i));
         }
     }
