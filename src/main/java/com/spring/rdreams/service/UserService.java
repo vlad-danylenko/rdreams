@@ -1,15 +1,16 @@
 package com.spring.rdreams.service;
 
 import com.spring.rdreams.dto.UserDTO;
-import org.apache.catalina.User;
+
+import java.util.Optional;
 
 public interface UserService {
-    UserDTO addUser(UserDTO userDTO);
-    UserDTO getById(Long id);
-    UserDTO getByName(String name);
-    UserDTO getByEmail(String email);
-    UserDTO updateUser(UserDTO userDTO);
-    UserDTO deleteUser(Long id);
+    UserDTO createUser(UserDTO userDTO);
+    Optional<UserDTO> findById(Long id);
+    Optional<UserDTO> getByName(String name);
+    Optional<UserDTO> getByEmail(String email);
+    UserDTO updateUser(Long id, UserDTO userDTO);
+    void deleteUser(Long id);
 
 
 }

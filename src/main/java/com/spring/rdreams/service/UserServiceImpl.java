@@ -1,62 +1,72 @@
 package com.spring.rdreams.service;
 
 import com.spring.rdreams.dto.UserDTO;
+import com.spring.rdreams.entity.User;
+import com.spring.rdreams.repository.UserJPARepository;
+import com.spring.rdreams.utils.UserMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UserServiceImpl implements UserService {
+    private final UserJPARepository userJPARepository;
+    private final UserMapper userMapper;
 
-    private Map<Long, UserDTO> users = new HashMap<>();
 
-    @Override
-    public UserDTO addUser(UserDTO userDTO) {
-        users.put(userDTO.getId(), userDTO);
-        return userDTO;
+    public UserServiceImpl(UserJPARepository userJPARepository, UserMapper userMapper) {
+        this.userJPARepository = userJPARepository;
+        this.userMapper = userMapper;
     }
 
-    @Override
-    public UserDTO getById(Long id) {
-        return users.get(id);
-    }
-
-    @Override
-    public UserDTO getByName(String name) {
-        for (UserDTO user : users.values()) {
-            if (user.getName().equals(name)) {
-                return user;
-            }
+    public UserDTO createUser(UserDTO userDTO) {
+        User user = userMapper.toEntity(userDTO);
+        if (!userJPARepository.existsById(user.getId())) {
+            user = userJPARepository.save(user);
+            return userMapper.toDto(user);
         }
         return null;
     }
 
+    @Transactional(readOnly = true)
     @Override
-    public UserDTO getByEmail(String email) {
-        for (UserDTO user : users.values()) {
-            if (user.getEmail().equals(email)) {
-                return user;
-            }
+    public Optional<UserDTO> findById(Long id) {
+        return userJPARepository.findById(id).map(userMapper::toDto);
+    }
+
+
+    @Override
+    public Optional<UserDTO> getByName(String name) {
+        List<User> users = userJPARepository.findByName(name);
+        if (!users.isEmpty()) {
+            return Optional.of(userMapper.toDto(users.get(0)));
+        }
+        return Optional.empty();
+    }
+
+    @Override
+    public Optional<UserDTO> getByEmail(String email) {
+        return userJPARepository.findByEmail(email).map(userMapper::toDto);
+    }
+
+    @Override
+    public UserDTO updateUser(Long id, UserDTO userDTO) {
+        if (userJPARepository.existsById(id)) {
+            User user = userMapper.toEntity(userDTO);
+            user.setId(id);
+            user = userJPARepository.save(user);
+            return userMapper.toDto(user);
         }
         return null;
     }
 
+    @Transactional(propagation = Propagation.REQUIRED)
     @Override
-    public UserDTO updateUser(UserDTO userDTO) {
-        long userIdRequest = userDTO.getId();
-        users.replace(userIdRequest, userDTO);
-        if (users.get(userIdRequest) == null) {
-            return null;
-        }
-        return userDTO;
+    public void deleteUser(Long id) {
+        userJPARepository.deleteById(id);
     }
-
-    @Override
-    public UserDTO deleteUser(Long id) {
-        users.remove(id);
-        return null;
-    }
-
 
 }
